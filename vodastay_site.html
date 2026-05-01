@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vodastay — Seçilmiş Butik Oteller</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --cream: #F0F1EB; --warm-white: #F8F7F2; --aegean: #5D768B;
+  --aegean-light: #7A9BAD; --aegean-pale: #D8E6ED; --sand: #C9B898;
+  --sand-light: #E8DDD0; --charcoal: #2A2A2A; --muted: #7A7265; --accent: #B85C38;
+}
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--charcoal); overflow-x: hidden; }
+
+/* ── PAGE SYSTEM ── */
+.page { display: none; min-height: 100vh; }
+.page.active { display: block; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 20px 48px; display: flex; align-items: center; justify-content: space-between;
+  background: rgba(240,241,235,0.93); backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(201,185,154,0.25);
+}
+.nav-logo { cursor: pointer; display: flex; align-items: center; }
+.nav-links { display: flex; gap: 36px; list-style: none; }
+.nav-links a { font-size: 13px; font-weight: 400; letter-spacing: 0.08em; color: var(--muted); text-decoration: none; text-transform: uppercase; transition: color 0.3s; cursor: pointer; }
+.nav-links a:hover, .nav-links a.active-link { color: var(--aegean); }
+.nav-cta { font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warm-white); background: var(--aegean); padding: 10px 22px; border: none; cursor: pointer; transition: background 0.3s; }
+.nav-cta:hover { background: var(--aegean-light); }
+
+/* ── SHARED ── */
+.section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--aegean); margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+.section-label::before { content: ''; width: 24px; height: 1px; background: var(--aegean); }
+.section-title { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 300; line-height: 1.15; }
+.section-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 48px; }
+.section-link { font-size: 12px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 8px; padding-bottom: 4px; border-bottom: 1px solid var(--sand); transition: all 0.3s; cursor: pointer; }
+.section-link:hover { color: var(--aegean); border-color: var(--aegean); }
+.btn-primary { font-size: 13px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--warm-white); background: var(--charcoal); padding: 16px 36px; border: none; cursor: pointer; transition: all 0.3s; }
+.btn-primary:hover { background: var(--aegean); }
+.btn-ghost { font-size: 13px; font-weight: 400; letter-spacing: 0.06em; color: var(--muted); background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: color 0.3s; }
+.btn-ghost:hover { color: var(--charcoal); }
+.btn-light { font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--aegean); background: white; padding: 14px 32px; border: none; cursor: pointer; transition: all 0.3s; }
+.btn-light:hover { background: var(--cream); }
+.tag { font-size: 10px; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--sand-light); padding: 4px 10px; }
+
+/* ── HOME PAGE ── */
+.hero { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; padding-top: 80px; }
+.hero-left { display: flex; flex-direction: column; justify-content: center; padding: 80px 48px; position: relative; }
+.hero-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--aegean); margin-bottom: 24px; display: flex; align-items: center; gap: 12px; animation: fadeUp 0.6s ease forwards; }
+.hero-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--aegean); }
+.hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(52px, 5vw, 76px); font-weight: 300; line-height: 1.08; color: var(--charcoal); margin-bottom: 28px; animation: fadeUp 0.7s 0.1s ease both; }
+.hero-title em { font-style: italic; color: var(--aegean); }
+.hero-desc { font-size: 15px; font-weight: 300; line-height: 1.75; color: var(--muted); max-width: 400px; margin-bottom: 48px; animation: fadeUp 0.7s 0.2s ease both; }
+.hero-actions { display: flex; align-items: center; gap: 28px; animation: fadeUp 0.7s 0.3s ease both; }
+.hero-stats { position: absolute; bottom: 60px; left: 48px; display: flex; gap: 48px; }
+.stat-num { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; color: var(--charcoal); line-height: 1; }
+.stat-label { font-size: 11px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+.hero-right { position: relative; overflow: hidden; }
+.hero-image-grid { height: 100%; display: grid; grid-template-rows: 1fr 1fr; grid-template-columns: 1fr 1fr; gap: 3px; }
+.hero-img { overflow: hidden; position: relative; min-height: 300px; }
+.hero-img:first-child { grid-row: 1 / 3; }
+.hero-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
+.hero-img:hover img { transform: scale(1.04); }
+.hero-img-tag { position: absolute; bottom: 16px; left: 16px; background: rgba(240,241,235,0.9); backdrop-filter: blur(8px); padding: 6px 12px; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--aegean); }
+
+.search-section { padding: 36px 48px; background: var(--warm-white); border-bottom: 1px solid var(--sand-light); }
+.search-bar { display: flex; background: white; border: 1px solid var(--sand-light); overflow: hidden; max-width: 860px; margin: 0 auto; }
+.search-field { flex: 1; display: flex; align-items: center; padding: 0 24px; gap: 12px; border-right: 1px solid var(--sand-light); }
+.search-icon { font-size: 16px; color: var(--muted); }
+.search-input { border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 300; color: var(--charcoal); background: transparent; padding: 18px 0; width: 100%; }
+.search-input::placeholder { color: var(--sand); }
+.search-btn { background: var(--charcoal); color: white; border: none; padding: 0 36px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background 0.3s; white-space: nowrap; }
+.search-btn:hover { background: var(--aegean); }
+
+.categories { padding: 80px 48px; background: var(--warm-white); }
+.category-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+.category-card { position: relative; height: 220px; overflow: hidden; cursor: pointer; }
+.category-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; filter: brightness(0.75); }
+.category-card:hover img { transform: scale(1.06); filter: brightness(0.65); }
+.category-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%); }
+.category-name { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; color: white; line-height: 1.2; }
+.category-count { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 4px; letter-spacing: 0.06em; }
+
+.featured { padding: 80px 48px; }
+.hotel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 48px; }
+.hotel-card { cursor: pointer; overflow: hidden; background: var(--warm-white); transition: transform 0.3s; }
+.hotel-card:hover { transform: translateY(-4px); }
+.hotel-card-image { position: relative; height: 300px; overflow: hidden; }
+.hotel-card-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
+.hotel-card:hover .hotel-card-image img { transform: scale(1.05); }
+.hotel-badge { position: absolute; top: 16px; left: 16px; background: var(--aegean); color: white; font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; padding: 5px 10px; }
+.hotel-save { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; background: rgba(240,241,235,0.9); display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; transition: all 0.3s; backdrop-filter: blur(4px); }
+.hotel-save:hover { background: white; }
+.hotel-card-body { padding: 24px 20px 20px; border-left: 1px solid var(--sand-light); border-right: 1px solid var(--sand-light); border-bottom: 1px solid var(--sand-light); }
+.hotel-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.hotel-location { font-size: 11px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: var(--aegean); }
+.hotel-rating { font-size: 12px; color: var(--muted); }
+.hotel-name { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; line-height: 1.2; color: var(--charcoal); margin-bottom: 8px; }
+.hotel-desc { font-size: 13px; font-weight: 300; line-height: 1.65; color: var(--muted); margin-bottom: 18px; }
+.hotel-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+.hotel-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 16px; border-top: 1px solid var(--sand-light); }
+.hotel-price { font-family: 'Cormorant Garamond', serif; font-size: 13px; color: var(--muted); }
+.hotel-price strong { font-size: 22px; color: var(--charcoal); font-weight: 400; }
+.hotel-cta { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--aegean); background: none; border: 1px solid var(--aegean); padding: 9px 18px; cursor: pointer; transition: all 0.3s; }
+.hotel-cta:hover { background: var(--aegean); color: white; }
+
+.editorial { background: var(--aegean); padding: 80px 48px; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+.editorial-eyebrow { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--aegean-pale); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+.editorial-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--aegean-pale); }
+.editorial-title { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 300; line-height: 1.1; color: white; margin-bottom: 20px; }
+.editorial-title em { font-style: italic; }
+.editorial-text { font-size: 14px; font-weight: 300; line-height: 1.8; color: rgba(255,255,255,0.7); margin-bottom: 32px; }
+.editorial-right { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.editorial-stat { background: rgba(255,255,255,0.08); padding: 28px 24px; border: 1px solid rgba(255,255,255,0.1); }
+.editorial-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 300; color: white; line-height: 1; margin-bottom: 8px; }
+.editorial-stat-label { font-size: 12px; font-weight: 300; color: rgba(255,255,255,0.6); line-height: 1.5; }
+
+/* ── ALL HOTELS PAGE ── */
+.page-hero { padding: 120px 48px 60px; background: var(--warm-white); border-bottom: 1px solid var(--sand-light); }
+.page-hero-inner { max-width: 600px; }
+.page-hero .section-label { margin-bottom: 16px; }
+.page-hero h1 { font-family: 'Cormorant Garamond', serif; font-size: 56px; font-weight: 300; line-height: 1.1; margin-bottom: 16px; }
+.page-hero h1 em { font-style: italic; color: var(--aegean); }
+.page-hero p { font-size: 15px; font-weight: 300; line-height: 1.75; color: var(--muted); }
+
+.filters-bar { padding: 24px 48px; background: white; border-bottom: 1px solid var(--sand-light); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; position: sticky; top: 65px; z-index: 50; }
+.filter-btn { font-size: 12px; font-weight: 400; letter-spacing: 0.06em; color: var(--muted); background: none; border: 1px solid var(--sand-light); padding: 8px 16px; cursor: pointer; transition: all 0.3s; }
+.filter-btn:hover, .filter-btn.active { background: var(--aegean); color: white; border-color: var(--aegean); }
+.filter-select { font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--muted); background: none; border: 1px solid var(--sand-light); padding: 8px 16px; cursor: pointer; outline: none; appearance: none; padding-right: 32px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237A7265'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+.filters-count { margin-left: auto; font-size: 12px; color: var(--muted); letter-spacing: 0.06em; }
+
+.hotels-page-content { padding: 48px; }
+.hotels-full-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+
+/* ── HOTEL DETAIL PAGE ── */
+.detail-hero { padding-top: 80px; position: relative; height: 70vh; overflow: hidden; }
+.detail-hero img { width: 100%; height: 100%; object-fit: cover; }
+.detail-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%); }
+.detail-hero-content { position: absolute; bottom: 48px; left: 48px; right: 48px; color: white; }
+.detail-breadcrumb { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 12px; cursor: pointer; }
+.detail-breadcrumb:hover { color: white; }
+.detail-hero-title { font-family: 'Cormorant Garamond', serif; font-size: 64px; font-weight: 300; line-height: 1.05; margin-bottom: 12px; }
+.detail-hero-meta { display: flex; align-items: center; gap: 24px; font-size: 13px; color: rgba(255,255,255,0.8); }
+.detail-hero-badge { background: var(--aegean); color: white; font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; padding: 5px 12px; }
+
+.detail-body { display: grid; grid-template-columns: 1fr 380px; gap: 0; }
+.detail-main { padding: 64px 48px; }
+.detail-sidebar { padding: 48px 36px; background: var(--warm-white); border-left: 1px solid var(--sand-light); position: sticky; top: 80px; align-self: start; }
+
+.detail-gallery { display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 3px; height: 480px; margin-bottom: 48px; }
+.gallery-img { overflow: hidden; }
+.gallery-img:first-child { grid-row: 1 / 3; }
+.gallery-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s; }
+.gallery-img:hover img { transform: scale(1.04); }
+
+.detail-section { margin-bottom: 48px; padding-bottom: 48px; border-bottom: 1px solid var(--sand-light); }
+.detail-section:last-child { border-bottom: none; }
+.detail-section-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 400; margin-bottom: 20px; }
+.detail-text { font-size: 15px; font-weight: 300; line-height: 1.8; color: var(--muted); }
+
+.amenities-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
+.amenity-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
+.amenity-icon { font-size: 18px; }
+
+.reviews-list { display: flex; flex-direction: column; gap: 28px; margin-top: 24px; }
+.review-item { padding: 24px; background: white; border: 1px solid var(--sand-light); }
+.review-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.review-author { font-size: 14px; font-weight: 500; }
+.review-rating { color: var(--aegean); font-size: 13px; }
+.review-date { font-size: 11px; color: var(--muted); letter-spacing: 0.06em; }
+.review-text { font-size: 14px; font-weight: 300; line-height: 1.7; color: var(--muted); }
+
+.sidebar-price-box { text-align: center; padding: 28px; background: var(--cream); border: 1px solid var(--sand-light); margin-bottom: 20px; }
+.sidebar-price-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.sidebar-price-num { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 300; color: var(--charcoal); line-height: 1; }
+.sidebar-price-unit { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.sidebar-cta { width: 100%; background: var(--aegean); color: white; border: none; padding: 16px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background 0.3s; margin-bottom: 12px; }
+.sidebar-cta:hover { background: var(--charcoal); }
+.sidebar-cta-ghost { width: 100%; background: none; color: var(--charcoal); border: 1px solid var(--sand-light); padding: 14px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 400; letter-spacing: 0.06em; cursor: pointer; transition: all 0.3s; }
+.sidebar-cta-ghost:hover { border-color: var(--charcoal); }
+.sidebar-info { margin-top: 24px; display: flex; flex-direction: column; gap: 14px; }
+.sidebar-info-item { display: flex; align-items: flex-start; gap: 12px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+.sidebar-info-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.sidebar-rating-big { text-align: center; padding: 20px; border: 1px solid var(--sand-light); margin-bottom: 20px; }
+.sidebar-rating-num { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; color: var(--charcoal); }
+.sidebar-rating-stars { color: var(--aegean); font-size: 16px; letter-spacing: 2px; margin: 4px 0; }
+.sidebar-rating-count { font-size: 12px; color: var(--muted); }
+
+/* ── LISTING PAGE ── */
+.listing-page { background: var(--warm-white); }
+.listing-hero { padding: 120px 48px 80px; background: var(--aegean); }
+.listing-hero-inner { max-width: 640px; }
+.listing-eyebrow { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--aegean-pale); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+.listing-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--aegean-pale); }
+.listing-hero h1 { font-family: 'Cormorant Garamond', serif; font-size: 56px; font-weight: 300; line-height: 1.1; color: white; margin-bottom: 20px; }
+.listing-hero h1 em { font-style: italic; }
+.listing-hero p { font-size: 15px; font-weight: 300; line-height: 1.75; color: rgba(255,255,255,0.75); }
+
+.pricing-section { padding: 80px 48px; background: var(--cream); }
+.pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 48px; }
+.pricing-card { background: white; padding: 40px 32px; border: 1px solid var(--sand-light); position: relative; transition: transform 0.3s; }
+.pricing-card:hover { transform: translateY(-6px); }
+.pricing-card.featured-plan { background: var(--aegean); border-color: var(--aegean); }
+.plan-badge { position: absolute; top: -1px; left: 50%; transform: translateX(-50%); background: var(--accent); color: white; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 16px; }
+.plan-name { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 400; margin-bottom: 8px; }
+.pricing-card.featured-plan .plan-name { color: white; }
+.plan-price { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 300; line-height: 1; margin-bottom: 4px; }
+.pricing-card.featured-plan .plan-price { color: white; }
+.plan-period { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
+.pricing-card.featured-plan .plan-period { color: rgba(255,255,255,0.6); }
+.plan-divider { height: 1px; background: var(--sand-light); margin-bottom: 28px; }
+.pricing-card.featured-plan .plan-divider { background: rgba(255,255,255,0.15); }
+.plan-features { list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 36px; }
+.plan-features li { font-size: 13px; font-weight: 300; color: var(--muted); display: flex; align-items: flex-start; gap: 10px; line-height: 1.5; }
+.pricing-card.featured-plan .plan-features li { color: rgba(255,255,255,0.8); }
+.plan-features li::before { content: '✓'; color: var(--aegean); font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+.pricing-card.featured-plan .plan-features li::before { color: var(--aegean-pale); }
+.plan-cta { width: 100%; padding: 14px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: all 0.3s; border: 1px solid var(--charcoal); background: none; color: var(--charcoal); }
+.plan-cta:hover { background: var(--charcoal); color: white; }
+.pricing-card.featured-plan .plan-cta { border-color: white; color: white; background: rgba(255,255,255,0.1); }
+.pricing-card.featured-plan .plan-cta:hover { background: white; color: var(--aegean); }
+
+.form-section { padding: 80px 48px; background: var(--warm-white); }
+.form-section .section-title { margin-bottom: 48px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 860px; }
+.form-group { display: flex; flex-direction: column; gap: 8px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-label { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--charcoal); }
+.form-input, .form-select, .form-textarea {
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 300;
+  color: var(--charcoal); background: white; border: 1px solid var(--sand-light);
+  padding: 14px 16px; outline: none; transition: border-color 0.3s;
+  appearance: none;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--aegean); }
+.form-input::placeholder, .form-textarea::placeholder { color: var(--sand); }
+.form-textarea { resize: vertical; min-height: 120px; }
+.form-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237A7265'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; cursor: pointer; }
+.form-submit { margin-top: 12px; }
+.form-note { font-size: 12px; font-weight: 300; color: var(--muted); margin-top: 12px; line-height: 1.6; }
+
+.why-us { padding: 80px 48px; background: var(--cream); }
+.why-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 48px; }
+.why-card { padding: 36px 28px; background: white; border: 1px solid var(--sand-light); }
+.why-icon { font-size: 28px; margin-bottom: 20px; }
+.why-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; margin-bottom: 12px; }
+.why-text { font-size: 13px; font-weight: 300; line-height: 1.7; color: var(--muted); }
+
+/* ── ABOUT PAGE ── */
+.about-hero { padding: 140px 48px 80px; }
+.about-hero-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.about-hero h1 { font-family: 'Cormorant Garamond', serif; font-size: 64px; font-weight: 300; line-height: 1.08; margin-bottom: 24px; }
+.about-hero h1 em { font-style: italic; color: var(--aegean); }
+.about-hero-text { font-size: 16px; font-weight: 300; line-height: 1.8; color: var(--muted); margin-bottom: 32px; }
+.about-hero-img { height: 520px; overflow: hidden; position: relative; }
+.about-hero-img img { width: 100%; height: 100%; object-fit: cover; }
+.about-hero-img::after { content: ''; position: absolute; inset: 0; border: 2px solid var(--aegean); transform: translate(12px, 12px); pointer-events: none; }
+
+.manifesto { padding: 80px 48px; background: var(--aegean); }
+.manifesto-inner { max-width: 760px; margin: 0 auto; text-align: center; }
+.manifesto-quote { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 300; font-style: italic; color: white; line-height: 1.4; margin-bottom: 32px; }
+.manifesto-author { font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+
+.how-it-works { padding: 80px 48px; background: var(--warm-white); }
+.steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 48px; position: relative; }
+.step-card { padding: 36px 28px; background: white; border: 1px solid var(--sand-light); position: relative; }
+.step-num { font-family: 'Cormorant Garamond', serif; font-size: 64px; font-weight: 300; color: var(--sand-light); line-height: 1; margin-bottom: 16px; }
+.step-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; margin-bottom: 12px; }
+.step-text { font-size: 13px; font-weight: 300; line-height: 1.7; color: var(--muted); }
+
+.team-section { padding: 80px 48px; }
+.team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+.team-card { text-align: center; }
+.team-img { width: 100%; height: 280px; overflow: hidden; margin-bottom: 20px; position: relative; }
+.team-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s; }
+.team-card:hover .team-img img { transform: scale(1.04); }
+.team-name { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 400; margin-bottom: 4px; }
+.team-role { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--aegean); }
+
+/* ── FOOTER ── */
+footer { background: var(--charcoal); padding: 64px 48px 32px; }
+.footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 32px; }
+.footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 300; letter-spacing: 0.12em; color: white; text-transform: uppercase; margin-bottom: 16px; cursor: pointer; }
+.footer-logo span { color: var(--aegean-light); }
+.footer-desc { font-size: 13px; font-weight: 300; line-height: 1.7; color: rgba(255,255,255,0.4); max-width: 280px; }
+.footer-col-title { font-size: 11px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.7); margin-bottom: 20px; }
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.footer-links a { font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.3s; cursor: pointer; }
+.footer-links a:hover { color: rgba(255,255,255,0.8); }
+.footer-bottom { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: rgba(255,255,255,0.3); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════ NAV -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')"><svg width="140" height="44" viewBox="0 0 220 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 50 Q40 50 55 35 Q70 20 85 35 Q100 50 115 35 Q130 20 145 35 Q160 50 175 50" stroke="#5D768B" stroke-width="2.5" fill="none" stroke-linecap="round"/><text x="20" y="80" font-family="Georgia,serif" font-size="26" font-weight="700" fill="#2A2A2A" letter-spacing="2">VODA</text><text x="108" y="80" font-family="Georgia,serif" font-size="26" font-weight="300" fill="#5D768B" letter-spacing="2">STAY</text></svg></div>
+  <ul class="nav-links">
+    <li><a onclick="showPage('hotels')" id="nav-hotels">Oteller</a></li>
+    <li><a onclick="showPage('about')" id="nav-about">Hakkında</a></li>
+    <li><a onclick="showPage('listing')" id="nav-listing">Otel Listele</a></li>
+  </ul>
+  <button class="nav-cta" onclick="showPage('listing')">Otelinizi Listeleyin</button>
+</nav>
+
+<!-- ═══════════════════════════════════════════ HOME -->
+<div id="page-home" class="page active">
+
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Küratörel Otel Rehberi</div>
+      <h1 class="hero-title">Sadece<br><em>seçilmiş</em><br>oteller.</h1>
+      <p class="hero-desc">Ruhu olan yerleri bulduk, sana getirdik. Kalabalık listeler değil — her biri özenle seçilmiş, her biri bir hikaye.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="showPage('hotels')">Keşfet</button>
+        <button class="btn-ghost" onclick="showPage('about')">Nasıl çalışır →</button>
+      </div>
+      <div class="hero-stats">
+        <div><div class="stat-num">143</div><div class="stat-label">Seçilmiş Otel</div></div>
+        <div><div class="stat-num">28</div><div class="stat-label">Lokasyon</div></div>
+        <div><div class="stat-num">8</div><div class="stat-label">Kategori</div></div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-image-grid">
+        <div class="hero-img">
+          <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80" alt="Kaş">
+          <div class="hero-img-tag">Kaş</div>
+        </div>
+        <div class="hero-img">
+          <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&q=80" alt="Bodrum">
+          <div class="hero-img-tag">Bodrum</div>
+        </div>
+        <div class="hero-img">
+          <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&q=80" alt="Fethiye">
+          <div class="hero-img-tag">Fethiye</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="search-section">
+    <div class="search-bar">
+      <div class="search-field">
+        <span class="search-icon">⌕</span>
+        <input class="search-input" type="text" placeholder="Nereye gitmek istiyorsunuz?">
+      </div>
+      <div class="search-field">
+        <span class="search-icon">◈</span>
+        <input class="search-input" type="text" placeholder="Kategori — Minimalist, Tarihi...">
+      </div>
+      <button class="search-btn" onclick="showPage('hotels')">Ara</button>
+    </div>
+  </div>
+
+  <section class="categories">
+    <div class="section-header">
+      <div>
+        <div class="section-label">Yaşam Tarzına Göre</div>
+        <h2 class="section-title">Bir his seç,<br>biz oteli bulalım.</h2>
+      </div>
+      <span class="section-link" onclick="showPage('hotels')">Tüm kategoriler →</span>
+    </div>
+    <div class="category-grid">
+      <div class="category-card" onclick="showPage('hotels')">
+        <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400&q=80" alt="Minimalist">
+        <div class="category-overlay"><div class="category-name">Minimalist</div><div class="category-count">24 otel</div></div>
+      </div>
+      <div class="category-card" onclick="showPage('hotels')">
+        <img src="https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=400&q=80" alt="Tarihi">
+        <div class="category-overlay"><div class="category-name">Tarihi</div><div class="category-count">18 otel</div></div>
+      </div>
+      <div class="category-card" onclick="showPage('hotels')">
+        <img src="https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=400&q=80" alt="Doğa Kaçamağı">
+        <div class="category-overlay"><div class="category-name">Doğa Kaçamağı</div><div class="category-count">31 otel</div></div>
+      </div>
+      <div class="category-card" onclick="showPage('hotels')">
+        <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?w=400&q=80" alt="Denize Sıfır">
+        <div class="category-overlay"><div class="category-name">Denize Sıfır</div><div class="category-count">29 otel</div></div>
+      </div>
+      <div class="category-card" onclick="showPage('hotels')">
+        <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&q=80" alt="Lüks & Spa">
+        <div class="category-overlay"><div class="category-name">Lüks & Spa</div><div class="category-count">17 otel</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="featured">
+    <div class="section-header">
+      <div>
+        <div class="section-label">Bu Hafta Öne Çıkanlar</div>
+        <h2 class="section-title">Editörün<br><em>seçimleri.</em></h2>
+      </div>
+      <span class="section-link" onclick="showPage('hotels')">Tüm oteller →</span>
+    </div>
+    <div class="hotel-grid">
+      <div class="hotel-card" onclick="showPage('detail')">
+        <div class="hotel-card-image">
+          <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80" alt="Mavi Köşk">
+          <div class="hotel-badge">Editör Seçimi</div>
+          <div class="hotel-save">♡</div>
+        </div>
+        <div class="hotel-card-body">
+          <div class="hotel-meta"><span class="hotel-location">Kaş, Antalya</span><span class="hotel-rating">★ 4.9</span></div>
+          <h3 class="hotel-name">Mavi Köşk</h3>
+          <p class="hotel-desc">Akdeniz'e nazır, taş duvarlı odaları ve özel koyu ile gürültüden uzak bir sığınak.</p>
+          <div class="hotel-tags"><span class="tag">Minimalist</span><span class="tag">Denize Sıfır</span><span class="tag">Butik</span></div>
+          <div class="hotel-footer"><div class="hotel-price">Gecelik <strong>₺4.200</strong>'den</div><button class="hotel-cta">İncele</button></div>
+        </div>
+      </div>
+      <div class="hotel-card" onclick="showPage('detail')">
+        <div class="hotel-card-image">
+          <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80" alt="Zeytin Evi">
+          <div class="hotel-save">♡</div>
+        </div>
+        <div class="hotel-card-body">
+          <div class="hotel-meta"><span class="hotel-location">Fethiye, Muğla</span><span class="hotel-rating">★ 4.8</span></div>
+          <h3 class="hotel-name">Zeytin Evi</h3>
+          <p class="hotel-desc">Yüz yıllık zeytinlikler arasında saklı, doğayla iç içe geleneksel bir Ege konağı.</p>
+          <div class="hotel-tags"><span class="tag">Tarihi</span><span class="tag">Doğa</span><span class="tag">Organik</span></div>
+          <div class="hotel-footer"><div class="hotel-price">Gecelik <strong>₺3.600</strong>'den</div><button class="hotel-cta">İncele</button></div>
+        </div>
+      </div>
+      <div class="hotel-card" onclick="showPage('detail')">
+        <div class="hotel-card-image">
+          <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&q=80" alt="Beyaz Çapa">
+          <div class="hotel-badge">Yeni</div>
+          <div class="hotel-save">♡</div>
+        </div>
+        <div class="hotel-card-body">
+          <div class="hotel-meta"><span class="hotel-location">Bodrum, Muğla</span><span class="hotel-rating">★ 4.7</span></div>
+          <h3 class="hotel-name">Beyaz Çapa</h3>
+          <p class="hotel-desc">Egeli beyaz, kireç duvarlar, bougainvillea ve sonsuz mavi — tam bir Bodrum masalı.</p>
+          <div class="hotel-tags"><span class="tag">Lüks</span><span class="tag">Havuzlu</span><span class="tag">Çift</span></div>
+          <div class="hotel-footer"><div class="hotel-price">Gecelik <strong>₺5.800</strong>'den</div><button class="hotel-cta">İncele</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="editorial">
+    <div>
+      <div class="editorial-eyebrow">Otel Sahipleri İçin</div>
+      <h2 class="editorial-title">Komisyon değil,<br><em>özgürlük.</em></h2>
+      <p class="editorial-text">Booking'e her yıl servet ödemeyi bırakın. Sabit yıllık ücretle premium bir platformda yerinizi alın — rezervasyonlar doğrudan size gelsin.</p>
+      <button class="btn-light" onclick="showPage('listing')">Otelinizi Listeleyin</button>
+    </div>
+    <div class="editorial-right">
+      <div class="editorial-stat"><div class="editorial-stat-num">%0</div><div class="editorial-stat-label">Komisyon kesintisi</div></div>
+      <div class="editorial-stat"><div class="editorial-stat-num">12K+</div><div class="editorial-stat-label">Aylık aktif kullanıcı</div></div>
+      <div class="editorial-stat"><div class="editorial-stat-num">143</div><div class="editorial-stat-label">Seçilmiş otel</div></div>
+      <div class="editorial-stat"><div class="editorial-stat-num">Sabit</div><div class="editorial-stat-label">Yıllık ücret, sürpriz yok</div></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo" onclick="showPage('home')"><svg width="140" height="44" viewBox="0 0 220 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 50 Q40 50 55 35 Q70 20 85 35 Q100 50 115 35 Q130 20 145 35 Q160 50 175 50" stroke="#C9B898" stroke-width="2.5" fill="none" stroke-linecap="round"/><text x="20" y="80" font-family="Georgia,serif" font-size="26" font-weight="700" fill="white" letter-spacing="2">VODA</text><text x="108" y="80" font-family="Georgia,serif" font-size="26" font-weight="300" fill="#C9B898" letter-spacing="2">STAY</text></svg></div>
+        <p class="footer-desc">Türkiye'nin en özgün butik otelleri için küratörel bir rehber. Sadece seçilmiş, sadece ruhu olan yerler.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Keşfet</div>
+        <ul class="footer-links"><li><a onclick="showPage('hotels')">Tüm Oteller</a></li><li><a onclick="showPage('hotels')">Kategoriler</a></li><li><a onclick="showPage('hotels')">Lokasyonlar</a></li></ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Platform</div>
+        <ul class="footer-links"><li><a onclick="showPage('about')">Hakkında</a></li><li><a onclick="showPage('about')">Nasıl Çalışır</a></li><li><a onclick="showPage('listing')">Otel Listele</a></li></ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Takip Et</div>
+        <ul class="footer-links"><li><a>Instagram</a></li><li><a>Pinterest</a></li><li><a>Bülten</a></li></ul>
+      </div>
+    </div>
+    <div class="footer-bottom"><span>© 2025 Vodastay. Tüm hakları saklıdır.</span><span>Gizlilik · Kullanım Koşulları</span></div>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════════ ALL HOTELS -->
+<div id="page-hotels" class="page">
+  <div class="page-hero">
+    <div class="page-hero-inner">
+      <div class="section-label">Tüm Koleksiyon</div>
+      <h1>Türkiye'nin <em>en iyi</em><br>butik otelleri.</h1>
+      <p>Her biri editörümüz tarafından yerinde ziyaret edilip seçilmiş 143 otel. Fiyat yarışması yok — sadece kalite ve karakter.</p>
+    </div>
+  </div>
+
+  <div class="filters-bar">
+    <button class="filter-btn active">Tümü</button>
+    <button class="filter-btn">Minimalist</button>
+    <button class="filter-btn">Tarihi</button>
+    <button class="filter-btn">Doğa Kaçamağı</button>
+    <button class="filter-btn">Denize Sıfır</button>
+    <button class="filter-btn">Lüks & Spa</button>
+    <button class="filter-btn">Çiftler İçin</button>
+    <select class="filter-select">
+      <option>Lokasyon Seç</option>
+      <option>Kaş</option><option>Fethiye</option><option>Bodrum</option>
+      <option>Antalya</option><option>İzmir</option><option>Çeşme</option>
+    </select>
+    <select class="filter-select">
+      <option>Fiyat Aralığı</option>
+      <option>₺1.000 – ₺3.000</option>
+      <option>₺3.000 – ₺6.000</option>
+      <option>₺6.000+</option>
+    </select>
+    <div class="filters-count">143 otel listeleniyor</div>
+  </div>
+
+  <div class="hotels-page-content">
+    <div class="hotels-full-grid">
+      <div class="hotel-card" onclick="showPage('detail')">
+        <div class="hotel-card-image"><img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80" alt=""><div class="hotel-badge">Editör Seçimi</div><div class="hotel-save">♡</div></div>
+        <div class="hotel-card-body"><div class="hotel-meta"><span class="hotel-location">Kaş, Antalya</span><span class="hotel-rating">★ 4.9</span></div><h3 class="hotel-name">Mavi Köşk</h3><p class="hotel-desc">Akdeniz'e nazır, taş duvarlı odaları ve özel koyu ile gürültüden uzak bir sığınak.</p><div class="hotel-tags"><span class="tag">Minimalist</span><span class="tag">Denize Sıfır</span></div><div class="hotel-footer"><div class="hotel-price">Gecelik <strong>₺4.200</strong>'den</div><button class="hotel-cta">İncele</button></div></div>
+      </div>
+      <div class="hotel-card" onclick="showPage('detail')">
+        <div class="hotel-card-image"><img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80" alt=""><div class="hotel-save">♡</div></div>
+        <div class="hotel-card-body"><div class="hotel-meta"><span class="hotel-location">Fethiye, Muğla</span><span class="hotel-rating">★ 4.8</span></div><h3 class="hotel-name">Zeytin Evi</h3><p class="hotel-desc">Yüz yıllık zeytinlikler arasında saklı, doğayla iç içe geleneksel bir Ege konağı.</p><div class="hotel-tags"><span class="tag">Tarihi</span><span class="tag">Doğa</span></div><div class="hotel-footer"><div class="hotel-price">Gecelik <strong>₺3.600</strong>'den</div><button class="hotel-cta">İncele</button></div></div>
+      </div>
+      <div class="hotel-card" onclick="showPage('detail')">
+        <div class="hotel-card-image"><img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=600&q=80" alt=""><div class="hotel-badge">Yeni</div><div class="hotel-save">♡</div></div>
+        <div class="hotel-card-body"><div class="hotel-meta"><span class="hotel-location">Bodrum, Muğla</span><span class="hotel-rating">★ 4.7</span></div><h3 class="hotel-name">Beyaz Çapa</h3><p class="hotel-desc">Egeli beyaz, kireç duvarlar, bougainvillea ve sonsuz mavi — tam bir Bodrum masalı.</p><div class="hotel-tags"><span class="tag">Lüks</span><span class="tag">Havuzlu</span></div><div class="hotel-footer"><div class="hotel-price">Gecelik <strong>₺5.800</strong>'den</div><button class="hotel-cta">İncele</button></div></div>
+      </div>
+      <div class="hotel-card" onclick="showPage('detail')">
+        <div class="hotel-card-image"><img src="https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=600&q=80" alt=""><div class="hotel-save">♡</div></div>
+        <div class="hotel-card-body"><div class="hotel-meta"><span class="hotel-location">Çeşme, İzmir</span><span class="hotel-rating">★ 4.9</span></div><h3 class="hotel-name">Taş Konak</h3><p class="hotel-desc">18. yüzyıldan kalma taş bir yapıda modern konfor. Çeşme'nin kalbinde zamansız bir deneyim.</p><div class="hotel-tags"><span class="tag">Tarihi</span><span class="tag">Butik</span></div><div class="hotel-footer"><div class="hotel-price">Gecelik <strong>₺4.800</strong>'den</div><button class="hotel-cta">İncele</button></div></div>
+      </div>
+      <div class="hotel-card" onclick="showPage('detail')">
+        <div class="hotel-card-image"><img src="https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=600&q=80" alt=""><div class="hotel-badge">Editör Seçimi</div><div class="hotel-save">♡</div></div>
+        <div class="hotel-card-body"><div class="hotel-meta"><span class="hotel-location">Akyaka, Muğla</span><span class="hotel-rating">★ 5.0</span></div><h3 class="hotel-name">Orman Köşkü</h3><p class="hotel-desc">Çam ormanı içinde saklanmış, nehre sıfır küçük bir cennet. Şehrin sesinden tamamen kopuyorsunuz.</p><div class="hotel-tags"><span class="tag">Doğa</span><span class="tag">Minimalist</span></div><div class="hotel-footer"><div class="hotel-price">Gecelik <strong>₺2.900</strong>'den</div><button class="hotel-cta">İncele</button></div></div>
+      </div>
+      <div class="hotel-card" onclick="showPage('detail')">
+        <div class="hotel-card-image"><img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&q=80" alt=""><div class="hotel-save">♡</div></div>
+        <div class="hotel-card-body"><div class="hotel-meta"><span class="hotel-location">Kalkan, Antalya</span><span class="hotel-rating">★ 4.8</span></div><h3 class="hotel-name">Sümbül Otel</h3><p class="hotel-desc">Sonsuz havuzu ve Akdeniz'e uzanan terasıyla Kalkan'ın en ikonik adreslerinden biri.</p><div class="hotel-tags"><span class="tag">Lüks</span><span class="tag">Denize Sıfır</span></div><div class="hotel-footer"><div class="hotel-price">Gecelik <strong>₺6.400</strong>'den</div><button class="hotel-cta">İncele</button></div></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-top">
+      <div><div class="footer-logo" onclick="showPage('home')"><svg width="140" height="44" viewBox="0 0 220 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 50 Q40 50 55 35 Q70 20 85 35 Q100 50 115 35 Q130 20 145 35 Q160 50 175 50" stroke="#C9B898" stroke-width="2.5" fill="none" stroke-linecap="round"/><text x="20" y="80" font-family="Georgia,serif" font-size="26" font-weight="700" fill="white" letter-spacing="2">VODA</text><text x="108" y="80" font-family="Georgia,serif" font-size="26" font-weight="300" fill="#C9B898" letter-spacing="2">STAY</text></svg></div><p class="footer-desc">Türkiye'nin en özgün butik otelleri için küratörel bir rehber.</p></div>
+      <div><div class="footer-col-title">Keşfet</div><ul class="footer-links"><li><a onclick="showPage('hotels')">Tüm Oteller</a></li><li><a onclick="showPage('hotels')">Kategoriler</a></li></ul></div>
+      <div><div class="footer-col-title">Platform</div><ul class="footer-links"><li><a onclick="showPage('about')">Hakkında</a></li><li><a onclick="showPage('listing')">Otel Listele</a></li></ul></div>
+      <div><div class="footer-col-title">Takip Et</div><ul class="footer-links"><li><a>Instagram</a></li><li><a>Pinterest</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2025 Vodastay. Tüm hakları saklıdır.</span><span>Gizlilik · Kullanım Koşulları</span></div>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════════ HOTEL DETAIL -->
+<div id="page-detail" class="page">
+  <div class="detail-hero">
+    <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1400&q=80" alt="Mavi Köşk">
+    <div class="detail-hero-overlay"></div>
+    <div class="detail-hero-content">
+      <div class="detail-breadcrumb" onclick="showPage('hotels')">← Tüm Oteller</div>
+      <h1 class="detail-hero-title">Mavi Köşk</h1>
+      <div class="detail-hero-meta">
+        <span>📍 Kaş, Antalya</span>
+        <span>★★★★★ 4.9 (47 yorum)</span>
+        <div class="detail-hero-badge">Editör Seçimi</div>
+        <div class="detail-hero-badge" style="background:var(--accent)">Minimalist</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-body">
+    <div class="detail-main">
+
+      <div class="detail-gallery">
+        <div class="gallery-img"><img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&q=80" alt=""></div>
+        <div class="gallery-img"><img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&q=80" alt=""></div>
+        <div class="gallery-img"><img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&q=80" alt=""></div>
+        <div class="gallery-img"><img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400&q=80" alt=""></div>
+        <div class="gallery-img"><img src="https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=400&q=80" alt=""></div>
+      </div>
+
+      <div class="detail-section">
+        <div class="section-label">Otel Hakkında</div>
+        <h2 class="detail-section-title">Akdeniz'in saklı bir köşesi.</h2>
+        <p class="detail-text">Mavi Köşk, Kaş'ın sarp kayalıkları üzerinde, Akdeniz'e nazır konumuyla bölgenin en özgün adresleri arasında yer alıyor. 1970'lerde inşa edilmiş geleneksel taş mimarisi, modern dokunuşlarla yeniden yorumlanmış.</p>
+        <br>
+        <p class="detail-text">Otelin 8 odası, her biri deniz manzaralı ve birbirinden farklı şekilde tasarlanmış. Özel koy, sabah deniz banyosu için ya da öğleden sonra bir kitapla geçirilecek saatler için biçilmiş kaftan. Şehir gürültüsünden uzaklaşmak isteyenler için tam bir sığınak.</p>
+      </div>
+
+      <div class="detail-section">
+        <div class="section-label">İmkanlar</div>
+        <h2 class="detail-section-title">Ne sunuyor?</h2>
+        <div class="amenities-grid">
+          <div class="amenity-item"><span class="amenity-icon">🏊</span>Özel koy ve yüzme alanı</div>
+          <div class="amenity-item"><span class="amenity-icon">🍳</span>Ev yapımı kahvaltı</div>
+          <div class="amenity-item"><span class="amenity-icon">📶</span>Yüksek hızlı WiFi</div>
+          <div class="amenity-item"><span class="amenity-icon">🚗</span>Ücretsiz otopark</div>
+          <div class="amenity-item"><span class="amenity-icon">🌅</span>Teras & deniz manzarası</div>
+          <div class="amenity-item"><span class="amenity-icon">🐈</span>Evcil hayvan kabul</div>
+          <div class="amenity-item"><span class="amenity-icon">🛶</span>Kayak & tekne kiralama</div>
+          <div class="amenity-item"><span class="amenity-icon">📚</span>Kütüphane köşesi</div>
+          <div class="amenity-item"><span class="amenity-icon">🍷</span>Akşam aperitif servisi</div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="section-label">Misafir Yorumları</div>
+        <h2 class="detail-section-title">Buraya gidenler ne diyor?</h2>
+        <div class="reviews-list">
+          <div class="review-item">
+            <div class="review-header">
+              <div><div class="review-author">Ayşe K.</div><div class="review-date">Mart 2025</div></div>
+              <div class="review-rating">★★★★★ 5.0</div>
+            </div>
+            <p class="review-text">Hayatımda gittiğim en güzel otellerden biri. Sabah kahvaltısı olağanüstüydü, oda temizliği kusursuzdu. Özel koy gerçekten muhteşem — bir hafta boyunca orada kitap okudum. Kesinlikle tekrar gideceğim.</p>
+          </div>
+          <div class="review-item">
+            <div class="review-header">
+              <div><div class="review-author">Mehmet & Zeynep</div><div class="review-date">Şubat 2025</div></div>
+              <div class="review-rating">★★★★★ 4.8</div>
+            </div>
+            <p class="review-text">Balayı için tercih ettik ve hayal ettiğimizden çok daha güzeldi. Personel son derece ilgili ve samimi. Resepsiyondaki Hakan Bey gerçekten özel bir insan. Kaş'ı ilk kez ziyaret ediyoruz ama kesinlikle son değil.</p>
+          </div>
+          <div class="review-item">
+            <div class="review-header">
+              <div><div class="review-author">Selin T.</div><div class="review-date">Ocak 2025</div></div>
+              <div class="review-rating">★★★★☆ 4.6</div>
+            </div>
+            <p class="review-text">Şehrin sesinden tamamen kopmanız gerekiyorsa bu otel biçilmiş kaftan. Tek eksiğim kahvaltı saatinin biraz erken bitmesi. Ama manzara ve atmosfer her şeyi telafi ediyor. Odalar gerçekten fotoğraflardaki gibi.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="detail-sidebar">
+      <div class="sidebar-rating-big">
+        <div class="sidebar-rating-num">4.9</div>
+        <div class="sidebar-rating-stars">★★★★★</div>
+        <div class="sidebar-rating-count">47 misafir yorumu</div>
+      </div>
+      <div class="sidebar-price-box">
+        <div class="sidebar-price-label">Gecelik başlangıç fiyatı</div>
+        <div class="sidebar-price-num">₺4.200</div>
+        <div class="sidebar-price-unit">vergi dahil</div>
+      </div>
+      <button class="sidebar-cta">Rezervasyon Yap</button>
+      <button class="sidebar-cta-ghost">Oteli Ara</button>
+      <div class="sidebar-info">
+        <div class="sidebar-info-item"><span class="sidebar-info-icon">📍</span><span>Kaş Merkez, Antalya — limana 5 dk yürüyüş</span></div>
+        <div class="sidebar-info-item"><span class="sidebar-info-icon">🏨</span><span>8 oda · Maksimum 16 misafir</span></div>
+        <div class="sidebar-info-item"><span class="sidebar-info-icon">📅</span><span>Minimum 2 gece konaklama</span></div>
+        <div class="sidebar-info-item"><span class="sidebar-info-icon">🔄</span><span>Ücretsiz iptal: 5 gün öncesine kadar</span></div>
+        <div class="sidebar-info-item"><span class="sidebar-info-icon">📞</span><span>+90 242 836 XX XX</span></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-top">
+      <div><div class="footer-logo" onclick="showPage('home')"><svg width="140" height="44" viewBox="0 0 220 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 50 Q40 50 55 35 Q70 20 85 35 Q100 50 115 35 Q130 20 145 35 Q160 50 175 50" stroke="#C9B898" stroke-width="2.5" fill="none" stroke-linecap="round"/><text x="20" y="80" font-family="Georgia,serif" font-size="26" font-weight="700" fill="white" letter-spacing="2">VODA</text><text x="108" y="80" font-family="Georgia,serif" font-size="26" font-weight="300" fill="#C9B898" letter-spacing="2">STAY</text></svg></div><p class="footer-desc">Türkiye'nin en özgün butik otelleri için küratörel bir rehber.</p></div>
+      <div><div class="footer-col-title">Keşfet</div><ul class="footer-links"><li><a onclick="showPage('hotels')">Tüm Oteller</a></li><li><a onclick="showPage('hotels')">Kategoriler</a></li></ul></div>
+      <div><div class="footer-col-title">Platform</div><ul class="footer-links"><li><a onclick="showPage('about')">Hakkında</a></li><li><a onclick="showPage('listing')">Otel Listele</a></li></ul></div>
+      <div><div class="footer-col-title">Takip Et</div><ul class="footer-links"><li><a>Instagram</a></li><li><a>Pinterest</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2025 Vodastay. Tüm hakları saklıdır.</span><span>Gizlilik · Kullanım Koşulları</span></div>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════════ LISTING PAGE -->
+<div id="page-listing" class="page listing-page">
+  <div class="listing-hero">
+    <div class="listing-hero-inner">
+      <div class="listing-eyebrow">Otel Sahipleri İçin</div>
+      <h1>Booking'e değil,<br><em>kendinize</em> yatırım yapın.</h1>
+      <p>Yıllık sabit ücretle Türkiye'nin en seçici butik otel platformunda yerinizi alın. Komisyon yok, sürpriz yok — sadece kaliteli misafirler.</p>
+    </div>
+  </div>
+
+  <div class="why-us">
+    <div class="section-header">
+      <div>
+        <div class="section-label">Neden Vodastay?</div>
+        <h2 class="section-title">Farklı olan ne?</h2>
+      </div>
+    </div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon">💸</div>
+        <div class="why-title">Sıfır Komisyon</div>
+        <p class="why-text">Booking'in %15-25 komisyonuna karşın sabit yıllık ücret. Yılda 200 gece doluluğunuzda tasarrufunuz onlarca bin lira.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">🎯</div>
+        <div class="why-title">Doğru Misafir</div>
+        <p class="why-text">Platformumuza gelen misafir fiyat avcısı değil, deneyim arayanlar. Daha az şikayet, daha yüksek memnuniyet.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">📱</div>
+        <div class="why-title">Instagram Görünürlüğü</div>
+        <p class="why-text">Oteliniz platformun Instagram kanalında öne çıkıyor. Binlerce takipçiye organik içerik üretiyoruz.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">🔍</div>
+        <div class="why-title">SEO Trafiği</div>
+        <p class="why-text">Her otel profili ayrı bir Google girişi. "Kaş butik otel" aramasında sizi buluyorlar, doğrudan size geliyorlar.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="pricing-section">
+    <div class="section-header">
+      <div>
+        <div class="section-label">Paketler</div>
+        <h2 class="section-title">Otelinize uygun<br>paketi seçin.</h2>
+      </div>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="plan-name">Standart</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Özenle hazırlanmış otel profil sayfası</li>
+          <li>Kategori listesinde yer alma</li>
+          <li>Google SEO optimizasyonu</li>
+          <li>Aylık performans raporu</li>
+          <li>Rezervasyon yönlendirmesi (direkt otele)</li>
+        </ul>
+        <button class="plan-cta" onclick="document.getElementById('form-section').scrollIntoView({behavior:'smooth'})">İletişime Geçin</button>
+      </div>
+      <div class="pricing-card featured-plan">
+        <div class="plan-badge">En Popüler</div>
+        <div class="plan-name">Öne Çıkan</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Standart paket + tüm özellikler</li>
+          <li>Ana sayfada öne çıkarılma</li>
+          <li>Aylık Instagram featured içerik (2 post)</li>
+          <li>Arama sonuçlarında öncelikli sıralama</li>
+          <li>Editör tarafından yazılmış otel hikayesi</li>
+          <li>Yıllık fotoğraf rehberliği</li>
+        </ul>
+        <button class="plan-cta" onclick="document.getElementById('form-section').scrollIntoView({behavior:'smooth'})">İletişime Geçin</button>
+      </div>
+      <div class="pricing-card">
+        <div class="plan-name">Premiere</div>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>Öne Çıkan paket + tüm özellikler</li>
+          <li>Aylık sosyal medya içerik üretimi (8 post)</li>
+          <li>Üst sıra konumlandırma — her zaman</li>
+          <li>Özel "Editörün Seçimi" rozeti</li>
+          <li>Yıllık strateji görüşmesi</li>
+          <li>Ajans hizmetlerine öncelikli erişim</li>
+        </ul>
+        <button class="plan-cta" onclick="document.getElementById('form-section').scrollIntoView({behavior:'smooth'})">İletişime Geçin</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section" id="form-section">
+    <div class="section-label">Başvuru Formu</div>
+    <h2 class="section-title" style="margin-bottom:12px">Otelinizi listeleyelim.</h2>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:40px;font-weight:300">Formu doldurun, 48 saat içinde size dönelim. Her başvuru editörümüz tarafından incelenir.</p>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Otel Adı *</label>
+        <input class="form-input" type="text" placeholder="Otelinizin adı">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Lokasyon *</label>
+        <input class="form-input" type="text" placeholder="Şehir / İlçe">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ad Soyad *</label>
+        <input class="form-input" type="text" placeholder="Yetkili kişi">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telefon *</label>
+        <input class="form-input" type="tel" placeholder="+90 5XX XXX XX XX">
+      </div>
+      <div class="form-group">
+        <label class="form-label">E-posta *</label>
+        <input class="form-input" type="email" placeholder="iletisim@oteliniz.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Web Sitesi</label>
+        <input class="form-input" type="url" placeholder="www.oteliniz.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kategori</label>
+        <select class="form-select">
+          <option>Kategori seçin</option>
+          <option>Minimalist</option><option>Tarihi</option><option>Doğa Kaçamağı</option>
+          <option>Denize Sıfır</option><option>Lüks & Spa</option><option>Çiftler İçin</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Paket Tercihi</label>
+        <select class="form-select">
+          <option>Paket seçin</option>
+          <option>Standart — ₺8.000/yıl</option>
+          <option>Öne Çıkan — ₺15.000/yıl</option>
+          <option>Premiere — ₺25.000/yıl</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Otelinizi kısaca anlatın</label>
+        <textarea class="form-textarea" placeholder="Otelinizin hikayesi, özellikleri, misafirlerinize sunduklarınız..."></textarea>
+      </div>
+      <div class="form-group full form-submit">
+        <button class="btn-primary" style="width:fit-content">Başvuruyu Gönder</button>
+        <p class="form-note">* Tüm başvurular editörümüz tarafından incelenir. Her otel kabul edilmeyebilir — kalite standartlarımızı koruuyoruz. Başvurunuzu aldıktan sonra 48 saat içinde size dönüyoruz.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-top">
+      <div><div class="footer-logo" onclick="showPage('home')"><svg width="140" height="44" viewBox="0 0 220 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 50 Q40 50 55 35 Q70 20 85 35 Q100 50 115 35 Q130 20 145 35 Q160 50 175 50" stroke="#C9B898" stroke-width="2.5" fill="none" stroke-linecap="round"/><text x="20" y="80" font-family="Georgia,serif" font-size="26" font-weight="700" fill="white" letter-spacing="2">VODA</text><text x="108" y="80" font-family="Georgia,serif" font-size="26" font-weight="300" fill="#C9B898" letter-spacing="2">STAY</text></svg></div><p class="footer-desc">Türkiye'nin en özgün butik otelleri için küratörel bir rehber.</p></div>
+      <div><div class="footer-col-title">Keşfet</div><ul class="footer-links"><li><a onclick="showPage('hotels')">Tüm Oteller</a></li></ul></div>
+      <div><div class="footer-col-title">Platform</div><ul class="footer-links"><li><a onclick="showPage('about')">Hakkında</a></li><li><a onclick="showPage('listing')">Otel Listele</a></li></ul></div>
+      <div><div class="footer-col-title">Takip Et</div><ul class="footer-links"><li><a>Instagram</a></li><li><a>Pinterest</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2025 Vodastay. Tüm hakları saklıdır.</span><span>Gizlilik · Kullanım Koşulları</span></div>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════════ ABOUT PAGE -->
+<div id="page-about" class="page">
+
+  <div class="about-hero">
+    <div class="about-hero-inner">
+      <div>
+        <div class="section-label">Hakkımızda</div>
+        <h1>Ruhu olan<br>yerlere <em>inanıyoruz.</em></h1>
+        <p class="about-hero-text">Vodastay, Türkiye'nin en özgün butik otelleri için kurulmuş bir küratörel rehber. Amacımız basit: seyahat planlarken doğru yeri bulmak için harcadığınız saatleri dakikalara indirmek.</p>
+        <p class="about-hero-text">Her otel editörümüz tarafından yerinde ziyaret edilerek seçilir. Para ödeyerek listeye girme yok — sadece gerçekten özel olan yerler burada.</p>
+        <button class="btn-primary" onclick="showPage('hotels')">Koleksiyonu Keşfet</button>
+      </div>
+      <div class="about-hero-img">
+        <img src="https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=700&q=80" alt="Vodastay hakkında">
+      </div>
+    </div>
+  </div>
+
+  <div class="manifesto">
+    <div class="manifesto-inner">
+      <div class="manifesto-quote">"Tatil, bir yerden kaçmak değil — doğru yere varmaktır."</div>
+      <div class="manifesto-author">Vodastay Manifestosu</div>
+    </div>
+  </div>
+
+  <div class="how-it-works">
+    <div class="section-header">
+      <div>
+        <div class="section-label">Süreç</div>
+        <h2 class="section-title">Nasıl çalışır?</h2>
+      </div>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-title">Keşfederiz</div>
+        <p class="step-text">Editörümüz Türkiye'nin dört bir yanındaki butik otelleri dolaşarak potansiyel adayları belirler.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-title">Ziyaret Ederiz</div>
+        <p class="step-text">Her otel yerinde incelenir. Oda kalitesi, atmosfer, personel, çevre — hepsi değerlendirilir.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-title">Seçeriz</div>
+        <p class="step-text">Standartlarımızı karşılayan oteller koleksiyona eklenir. Kabul oranımız %30'un altında.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">04</div>
+        <div class="step-title">Ulaştırırız</div>
+        <p class="step-text">SEO, Instagram ve editoryal içeriklerle bu otellere kaliteli misafirler yönlendiririz.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-top">
+      <div><div class="footer-logo" onclick="showPage('home')"><svg width="140" height="44" viewBox="0 0 220 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 50 Q40 50 55 35 Q70 20 85 35 Q100 50 115 35 Q130 20 145 35 Q160 50 175 50" stroke="#C9B898" stroke-width="2.5" fill="none" stroke-linecap="round"/><text x="20" y="80" font-family="Georgia,serif" font-size="26" font-weight="700" fill="white" letter-spacing="2">VODA</text><text x="108" y="80" font-family="Georgia,serif" font-size="26" font-weight="300" fill="#C9B898" letter-spacing="2">STAY</text></svg></div><p class="footer-desc">Türkiye'nin en özgün butik otelleri için küratörel bir rehber.</p></div>
+      <div><div class="footer-col-title">Keşfet</div><ul class="footer-links"><li><a onclick="showPage('hotels')">Tüm Oteller</a></li></ul></div>
+      <div><div class="footer-col-title">Platform</div><ul class="footer-links"><li><a onclick="showPage('about')">Hakkında</a></li><li><a onclick="showPage('listing')">Otel Listele</a></li></ul></div>
+      <div><div class="footer-col-title">Takip Et</div><ul class="footer-links"><li><a>Instagram</a></li><li><a>Pinterest</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2025 Vodastay. Tüm hakları saklıdır.</span><span>Gizlilik · Kullanım Koşulları</span></div>
+  </footer>
+</div>
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active-link'));
+  const map = { hotels: 'nav-hotels', about: 'nav-about', listing: 'nav-listing' };
+  if (map[id]) document.getElementById(map[id]).classList.add('active-link');
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
